@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ハノイの塔</title>
+    <link rel="stylesheet" href="hanoi.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>ハノイの塔</h1>
+        <div class="game-container">
+            <div class="move-counter">
+                <div>
+                    <label>現在の移動回数</label>
+                    <span id="moveCount">0</span>
+                </div>
+                <div>
+                    <label>最短移動回数</label>
+                    <span id="minMoves">0</span>
+                </div>
+            </div>
+            <div class="towers-container">
+                <div id="tower0" class="tower"></div>
+                <div id="tower1" class="tower"></div>
+                <div id="tower2" class="tower"></div>
+            </div>
+            <div class="controls">
+                <div class="control-buttons">
+                    <button id="startButton">開始</button>
+                    <button id="pauseButton" disabled>一時停止</button>
+                </div>
+                <div class="volume-control">
+                    <label>音量:</label>
+                    <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.5">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="hanoi.js"></script>
+</body>
+
+</html>
