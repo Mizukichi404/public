@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ハノイの塔</title>
+    <link rel="icon" href="data:,">
     <link rel="stylesheet" href="hanoi.css">
 </head>
 
@@ -12,6 +13,31 @@
     <div class="container">
         <h1>ハノイの塔</h1>
         <div class="game-container">
+            <div class="game-settings">
+                <div class="disk-selector">
+                    <label for="diskCount">ディスクの枚数:</label>
+                    <select id="diskCount">
+                        <option value="3">3枚</option>
+                        <option value="4">4枚</option>
+                        <option value="5">5枚</option>
+                        <option value="6">6枚</option>
+                        <option value="7">7枚</option>
+                        <option value="8">8枚</option>
+                        <option value="9">9枚</option>
+                        <option value="10">10枚</option>
+                        <option value="11">11枚</option>
+                        <option value="12">12枚</option>
+                    </select>
+                </div>
+                <button id="startGameButton">ゲームスタート</button>
+                <button id="resetButton" disabled>リセット</button>
+                <button id="showSolutionButton" disabled>回答を見る</button>
+            </div>
+            <div class="game-instructions">
+                <p>【目標】左の塔から右の塔へすべてのディスクを移動させてください。</p>
+                <p>【ルール】大きなディスクの上に小さなディスクを置くことはできません。</p>
+                <p>【操作方法】ディスクをドラッグ＆ドロップ、またはクリックで移動できます。</p>
+            </div>
             <div class="move-counter">
                 <div>
                     <label>現在の移動回数</label>
@@ -21,22 +47,45 @@
                     <label>最短移動回数</label>
                     <span id="minMoves">0</span>
                 </div>
+                <div>
+                    <label>経過時間</label>
+                    <span id="timer">00:00</span>
+                </div>
             </div>
             <div class="towers-container">
-                <div id="tower0" class="tower"></div>
-                <div id="tower1" class="tower"></div>
-                <div id="tower2" class="tower"></div>
+                <div class="tower-wrapper">
+                    <div id="tower0" class="tower"></div>
+                    <div class="tower-label">開始の塔</div>
+                    <button class="tower-button" data-tower="0" disabled>選択</button>
+                </div>
+                <div class="tower-wrapper">
+                    <div id="tower1" class="tower"></div>
+                    <div class="tower-label">作業用の塔</div>
+                    <button class="tower-button" data-tower="1" disabled>選択</button>
+                </div>
+                <div class="tower-wrapper">
+                    <div id="tower2" class="tower"></div>
+                    <div class="tower-label">目標の塔</div>
+                    <button class="tower-button" data-tower="2" disabled>選択</button>
+                </div>
             </div>
             <div class="controls">
-                <div class="control-buttons">
-                    <button id="startButton">開始</button>
-                    <button id="pauseButton" disabled>一時停止</button>
-                </div>
                 <div class="volume-control">
                     <label>音量:</label>
                     <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.5">
                 </div>
             </div>
+        </div>
+    </div>
+    <div id="congratulations" class="congratulations">
+        <div class="congratulations-content">
+            <h2>クリア！おめでとうございます！</h2>
+            <div class="score-details">
+                <p>移動回数: <span id="finalMoveCount">0</span> / 最短手数: <span id="finalMinMoves">0</span></p>
+                <p>クリア時間: <span id="finalTime">00:00</span></p>
+                <p class="final-score">スコア: <span id="finalScore">0</span>点</p>
+            </div>
+            <button id="closeCongratsButton">閉じる</button>
         </div>
     </div>
     <script src="hanoi.js"></script>
