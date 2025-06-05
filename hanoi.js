@@ -1,35 +1,135 @@
+// AudioManager class for handling all audio-related operations
+class AudioManager {
+    constructor() {
+        this.bgm = new Audio('bgm.mp3');
+        this.moveSound = new Audio('move.mp3');
+        this.successSound = new Audio('success.mp3');
+        this.buttonSound = new Audio('button.mp3');
+
+        this.bgm.loop = true;
+
+        // Error handling for audio files
+        this.setupErrorHandling();
+
+        // Initialize volume
+        this.setVolume(0.5);
+    }
+
+    setupErrorHandling() {
+        const audioFiles = {
+            'move.mp3': this.moveSound,
+            'bgm.mp3': this.bgm,
+            'success.mp3': this.successSound,
+            'button.mp3': this.buttonSound
+        };
+
+        for (const [filename, audio] of Object.entries(audioFiles)) {
+            audio.onerror = () => console.warn(`Warning: ${filename} could not be loaded`);
+        }
+    }
+
+    setVolume(value) {
+        const audioElements = [this.bgm, this.moveSound, this.successSound, this.buttonSound];
+        audioElements.forEach(audio => {
+            if (audio) audio.volume = value;
+        });
+    }
+
+    playBGM() {
+        if (this.bgm && this.bgm.readyState >= 2) {
+            this.bgm.currentTime = 0;
+            this.bgm.play().catch(err => console.warn('BGM playback failed:', err));
+        }
+    }
+
+    stopBGM() {
+        if (this.bgm) {
+            this.bgm.pause();
+            this.bgm.currentTime = 0;
+        }
+    }
+
+    playMoveSound() {
+        if (this.moveSound && this.moveSound.readyState >= 2) {
+            this.moveSound.currentTime = 0;
+            this.moveSound.play().catch(err => console.warn('Move sound playback failed:', err));
+        }
+    }
+
+    playSuccessSound() {
+        if (this.successSound && this.successSound.readyState >= 2) {
+            this.successSound.currentTime = 0;
+            this.successSound.play().catch(err => console.warn('Success sound playback failed:', err));
+        }
+    }
+
+    playButtonSound() {
+        if (this.buttonSound && this.buttonSound.readyState >= 2) {
+            this.buttonSound.currentTime = 0;
+            this.buttonSound.play().catch(err => console.warn('Button sound playback failed:', err));
+        }
+    }
+}
+
+// Game state management
+const GameState = {
+    IDLE: 'idle',
+    PLAYING: 'playing',
+    PAUSED: 'paused',
+    SHOWING_SOLUTION: 'showing_solution'
+};
+
+// Constants
+const CONSTANTS = {
+    MIN_DISKS: 3,
+    MAX_DISKS: 12,
+    MOVE_DELAY: 2000,
+    DEFAULT_VOLUME: 0.5
+};
+
 class HanoiTower {
     constructor() {
-        this.TOTAL_DISKS = 3;
-        this.MOVE_DELAY = 2000;
+        // DOM要素の初期化を最初に行う
+        this.initializeDOMElements();
+
+        // DOM要素が見つからない場合はエラーを表示
+        if (!this.validateDOMElements()) {
+            console.error('Required DOM elements not found. Please check the HTML structure.');
+            return;
+        }
+
+        this.audioManager = new AudioManager();
+        this.state = GameState.IDLE;
+        this.TOTAL_DISKS = CONSTANTS.MIN_DISKS;
         this.towers = [[], [], []];
         this.moveCount = 0;
-        this.isPlaying = false;
-        this.isPaused = false;
         this.minMoves = Math.pow(2, this.TOTAL_DISKS) - 1;
         this.selectedDisk = null;
         this.dragSource = null;
-        this.isShowingSolution = false;
         this.startTime = null;
         this.timerInterval = null;
-        this.isGameStarted = false;
         this.towerButtons = document.querySelectorAll('.tower-button');
 
-        // DOM要素の取得
-        this.initializeDOMElements();
-
-        // 音声の初期化
-        this.initializeAudio();
-
-        // イベントリスナーの設定
         this.setupEventListeners();
-
-        // タワーのドラッグ＆ドロップイベントの設定
         this.setupDragAndDrop();
-
-        // 初期化
         this.initializeTowers();
         this.updateMoveCount();
+        this.loadHighScores();
+        this.updateHighScoreDisplay();
+    }
+
+    validateDOMElements() {
+        // 必要なDOM要素が存在するか確認
+        return (
+            this.towerElements &&
+            this.towerElements.every(element => element !== null) &&
+            this.moveCountElement &&
+            this.minMovesElement &&
+            this.startGameButton &&
+            this.resetButton &&
+            this.showSolutionButton &&
+            this.diskCountSelect
+        );
     }
 
     initializeDOMElements() {
@@ -52,20 +152,6 @@ class HanoiTower {
             document.getElementById('tower1'),
             document.getElementById('tower2')
         ];
-    }
-
-    initializeAudio() {
-        this.bgm = new Audio('bgm.mp3');
-        this.bgm.loop = true;
-        this.moveSound = new Audio('move.mp3');
-        this.successSound = new Audio('success.mp3');
-        this.buttonSound = new Audio('button.mp3');
-
-        // 音声ファイルのエラーハンドリング
-        this.moveSound.onerror = () => console.warn('Warning: move.mp3 could not be loaded');
-        this.bgm.onerror = () => console.warn('Warning: bgm.mp3 could not be loaded');
-        this.successSound.onerror = () => console.warn('Warning: success.mp3 could not be loaded');
-        this.buttonSound.onerror = () => console.warn('Warning: button.mp3 could not be loaded');
     }
 
     setupEventListeners() {
@@ -98,7 +184,14 @@ class HanoiTower {
     }
 
     setupDragAndDrop() {
+        if (!this.towerElements) return;
+
         this.towerElements.forEach((tower, towerIndex) => {
+            if (!tower) {
+                console.error(`Tower element ${towerIndex} not found`);
+                return;
+            }
+
             // タワーのクリックイベント
             tower.addEventListener('click', () => this.handleTowerClick(towerIndex));
 
@@ -118,21 +211,14 @@ class HanoiTower {
         });
     }
 
-    playButtonSound() {
-        if (this.buttonSound && this.buttonSound.readyState >= 2) {
-            this.buttonSound.currentTime = 0;
-            this.buttonSound.play().catch(err => console.warn('Button sound playback failed:', err));
-        }
-    }
-
     startGame() {
         try {
-            this.playButtonSound();
+            this.audioManager.playButtonSound();
         } catch (err) {
             console.warn('Button sound playback failed:', err);
         }
 
-        this.isGameStarted = true;
+        this.state = GameState.PLAYING;
         this.startGameButton.disabled = true;
         this.resetButton.disabled = false;
         this.showSolutionButton.disabled = false;
@@ -144,24 +230,21 @@ class HanoiTower {
         });
 
         // BGM再生
-        if (this.bgm) {
-            this.bgm.currentTime = 0;
-            this.bgm.play().catch(err => console.warn('BGM playback failed:', err));
-        }
+        this.audioManager.playBGM();
 
         // タイマー開始
         this.startTimer();
     }
 
     resetGame() {
-        if (this.isShowingSolution) {
-            this.isShowingSolution = false;
+        if (this.state === GameState.SHOWING_SOLUTION) {
+            this.state = GameState.IDLE;
             this.showSolutionButton.textContent = '回答を見る';
             this.showSolutionButton.disabled = true;
         }
 
         // ゲーム状態のリセット
-        this.isGameStarted = false;
+        this.state = GameState.IDLE;
         this.startGameButton.disabled = false;
         this.resetButton.disabled = true;
         this.showSolutionButton.disabled = true;
@@ -174,20 +257,26 @@ class HanoiTower {
         });
 
         // BGMの停止
-        if (this.bgm) {
-            this.bgm.pause();
-            this.bgm.currentTime = 0;
-        }
+        this.audioManager.stopBGM();
+
+        // 選択状態をリセット
+        this.selectedDisk = null;
+        this.dragSource = null;
+        this.removeAllHighlights();
 
         this.initializeTowers();
         this.moveCount = 0;
         this.minMoves = Math.pow(2, this.TOTAL_DISKS) - 1;
         this.updateMoveCount();
-        this.selectedDisk = null;
-        this.dragSource = null;
         this.stopTimer();
         this.timerElement.textContent = '00:00';
         this.startTime = null;
+
+        try {
+            this.audioManager.playButtonSound();
+        } catch (err) {
+            console.warn('Button sound playback failed:', err);
+        }
     }
 
     handleDiskCountChange() {
@@ -196,10 +285,9 @@ class HanoiTower {
     }
 
     handleTowerButtonClick(towerIndex, button) {
-        if (!this.isGameStarted || this.isShowingSolution) return;
+        if (this.state !== GameState.PLAYING || this.state === GameState.SHOWING_SOLUTION) return;
 
-        console.log('Button clicked - Tower Index:', towerIndex);
-        console.log('Current tower state:', this.towers[towerIndex]);
+        this.audioManager.playButtonSound();
 
         if (this.selectedDisk === null) {
             // 塔を選択
@@ -207,11 +295,9 @@ class HanoiTower {
                 this.selectedDisk = towerIndex;
                 button.classList.add('selected');
                 this.highlightTopDisk(towerIndex);
-                console.log('Selected disk from tower:', towerIndex);
             }
         } else {
             // 移動を試みる
-            console.log('Moving disk from tower', this.selectedDisk, 'to tower', towerIndex);
             this.handleDiskMove(this.selectedDisk, towerIndex);
             // 選択状態をリセット
             this.selectedDisk = null;
@@ -221,7 +307,7 @@ class HanoiTower {
     }
 
     handleTowerClick(towerIndex) {
-        if (!this.isGameStarted || this.isShowingSolution) return;
+        if (this.state !== GameState.PLAYING || this.state === GameState.SHOWING_SOLUTION) return;
 
         if (this.selectedDisk === null) {
             if (this.towers[towerIndex].length > 0) {
@@ -238,22 +324,16 @@ class HanoiTower {
     }
 
     highlightTopDisk(towerIndex) {
-        console.log('Highlighting top disk of tower:', towerIndex);
-        console.log('Tower contents:', this.towers[towerIndex]);
-
         this.removeAllHighlights();
         const tower = this.towerElements[towerIndex];
         // 一番上のプレート（最後の子要素）を取得
         const topDisk = tower.lastChild;
-
-        console.log('Top disk element:', topDisk);
 
         if (topDisk) {
             // 一番上のプレートだけを選択状態にする
             topDisk.classList.add('selected');
             // プレートが選択可能であることを示すカーソルスタイルを追加
             topDisk.style.cursor = 'pointer';
-            console.log('Added selected class to disk:', topDisk.getAttribute('data-size'));
         }
     }
 
@@ -266,7 +346,7 @@ class HanoiTower {
     }
 
     handleDiskMove(fromTower, toTower) {
-        if (!this.isGameStarted || this.isShowingSolution) return;
+        if (this.state !== GameState.PLAYING || this.state === GameState.SHOWING_SOLUTION) return;
         if (fromTower === toTower) return;
 
         const fromStack = this.towers[fromTower];
@@ -288,7 +368,7 @@ class HanoiTower {
         this.towers[to].push(disk);
         this.moveCount++;
         this.updateMoveCount();
-        this.playMoveSound();
+        this.audioManager.playMoveSound();
         this.renderTowers();
     }
 
@@ -303,10 +383,7 @@ class HanoiTower {
             const elapsedSeconds = Math.floor(elapsedTime / 1000);
 
             // BGMの停止
-            if (this.bgm) {
-                this.bgm.pause();
-                this.bgm.currentTime = 0;
-            }
+            this.audioManager.stopBGM();
 
             // クリアアニメーション
             const disks = this.towerElements[2].querySelectorAll('.disk');
@@ -316,23 +393,39 @@ class HanoiTower {
             }
 
             // 効果音を再生
-            this.playSuccessSound();
+            this.audioManager.playSuccessSound();
 
             // スコアを計算
             const score = this.calculateScore(this.moveCount, this.minMoves, elapsedSeconds);
 
+            // ハイスコアの保存を試みる
+            const isNewHighScore = this.saveHighScore(
+                this.TOTAL_DISKS,
+                this.moveCount,
+                elapsedTime
+            );
+
             // クリアメッセージを表示
-            this.showCongratsMessage(elapsedTime, score);
+            this.showCongratsMessage(isNewHighScore);
+
+            // 3秒後にゲームをリセット
+            setTimeout(() => {
+                this.hideCongratsMessage();
+                this.resetGame();
+            }, 5000);
         }
     }
 
-    showCongratsMessage(elapsedTime, score) {
-        const minutes = Math.floor(elapsedTime / 60000);
-        const seconds = Math.floor((elapsedTime % 60000) / 1000);
+    showCongratsMessage(isNewHighScore) {
+        const timeElapsed = Date.now() - this.startTime;
         this.finalMoveCountElement.textContent = this.moveCount;
         this.finalMinMovesElement.textContent = this.minMoves;
-        this.finalTimeElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        this.finalScoreElement.textContent = score;
+        this.finalTimeElement.textContent = this.formatTime(timeElapsed);
+
+        // ハイスコアメッセージの追加
+        const scoreMessage = isNewHighScore ? 'New High Score!' : '';
+        this.finalScoreElement.textContent = scoreMessage;
+
         this.congratsElement.classList.add('show');
     }
 
@@ -373,20 +466,18 @@ class HanoiTower {
         for (let i = this.TOTAL_DISKS; i > 0; i--) {
             this.towers[0].push(i);
         }
-        console.log('Initialized towers:', this.towers);
         this.renderTowers();
     }
 
     renderTowers() {
         this.towerElements.forEach((tower, index) => {
             tower.innerHTML = '';
-            console.log(`Rendering tower ${index} with disks:`, this.towers[index]);
 
             // プレートを下から順に積み上げる
             this.towers[index].forEach((diskSize, diskIndex) => {
                 const disk = document.createElement('div');
                 disk.className = 'disk';
-                if (!this.isShowingSolution && this.isGameStarted) {
+                if (this.state !== GameState.SHOWING_SOLUTION && this.state === GameState.PLAYING) {
                     disk.classList.add('draggable');
                     disk.draggable = true;
                 }
@@ -396,25 +487,23 @@ class HanoiTower {
                 if (this.selectedDisk === index &&
                     diskIndex === this.towers[index].length - 1) {
                     disk.classList.add('selected');
-                    console.log(`Selected disk ${diskSize} at tower ${index}`);
                 }
 
                 // 一番上のプレートの場合、移動可能であることを示すスタイルを追加
                 if (diskIndex === this.towers[index].length - 1 &&
-                    this.isGameStarted &&
-                    !this.isShowingSolution) {
+                    this.state === GameState.PLAYING &&
+                    this.state !== GameState.SHOWING_SOLUTION) {
                     disk.style.cursor = 'pointer';
                 }
 
                 disk.addEventListener('dragstart', (e) => {
-                    if (this.isShowingSolution || !this.isGameStarted) {
+                    if (this.state === GameState.SHOWING_SOLUTION || this.state !== GameState.PLAYING) {
                         e.preventDefault();
                         return;
                     }
                     if (this.isValidDiskToMove(index, diskSize)) {
                         this.dragSource = index;
                         disk.classList.add('dragging');
-                        console.log(`Started dragging disk ${diskSize} from tower ${index}`);
                     } else {
                         e.preventDefault();
                     }
@@ -437,37 +526,15 @@ class HanoiTower {
     }
 
     isValidDiskToMove(towerIndex, diskSize) {
-        if (this.isShowingSolution || !this.isGameStarted) return false;
+        if (this.state === GameState.SHOWING_SOLUTION || this.state !== GameState.PLAYING) return false;
         const tower = this.towers[towerIndex];
         // 一番上のプレートかどうかを確認
         return tower.length > 0 && tower[tower.length - 1] === diskSize;
     }
 
-    playMoveSound() {
-        if (this.moveSound && this.moveSound.readyState >= 2) {
-            this.moveSound.currentTime = 0;
-            this.moveSound.play().catch(err => console.warn('Audio playback failed:', err));
-        }
-    }
-
-    playSuccessSound() {
-        if (this.successSound && this.successSound.readyState >= 2) {
-            this.successSound.currentTime = 0;
-            this.successSound.play().catch(err => console.warn('Audio playback failed:', err));
-        }
-    }
-
     setVolume(value) {
         const volume = parseFloat(value);
-        if (this.moveSound) {
-            this.moveSound.volume = volume;
-        }
-        if (this.successSound) {
-            this.successSound.volume = volume;
-        }
-        if (this.bgm) {
-            this.bgm.volume = volume;
-        }
+        this.audioManager.setVolume(volume);
     }
 
     calculateScore(moveCount, minMoves, elapsedSeconds) {
@@ -487,9 +554,9 @@ class HanoiTower {
     }
 
     async showSolution() {
-        if (this.isShowingSolution) return;
+        if (this.state === GameState.SHOWING_SOLUTION) return;
 
-        this.isShowingSolution = true;
+        this.state = GameState.SHOWING_SOLUTION;
         this.showSolutionButton.textContent = '回答表示中...';
         this.showSolutionButton.disabled = true;
         this.resetGame();
@@ -502,7 +569,7 @@ class HanoiTower {
 
         this.showSolutionButton.textContent = '回答を見る';
         this.showSolutionButton.disabled = false;
-        this.isShowingSolution = false;
+        this.state = GameState.IDLE;
     }
 
     async solveHanoi(n, source, auxiliary, target) {
@@ -516,9 +583,127 @@ class HanoiTower {
         await new Promise(resolve => setTimeout(resolve, 1000));
         await this.solveHanoi(n - 1, auxiliary, source, target);
     }
+
+    // ハイスコアの保存
+    saveHighScore(diskCount, moves, time) {
+        const key = `highScore_${diskCount}`;
+        const currentScore = localStorage.getItem(key);
+        const newScore = { moves, time };
+
+        if (!currentScore) {
+            localStorage.setItem(key, JSON.stringify(newScore));
+            this.updateHighScoreDisplay();
+            return true;
+        }
+
+        const savedScore = JSON.parse(currentScore);
+        if (moves < savedScore.moves || (moves === savedScore.moves && time < savedScore.time)) {
+            localStorage.setItem(key, JSON.stringify(newScore));
+            this.updateHighScoreDisplay();
+            return true;
+        }
+
+        return false;
+    }
+
+    // ハイスコアの読み込み
+    loadHighScores() {
+        this.highScores = {};
+        for (let i = 3; i <= 6; i++) {
+            const score = localStorage.getItem(`highScore_${i}`);
+            this.highScores[i] = score ? JSON.parse(score) : null;
+        }
+    }
+
+    // ハイスコア表示の更新
+    updateHighScoreDisplay() {
+        for (let i = 3; i <= 6; i++) {
+            const score = this.highScores[i];
+            const movesElement = document.getElementById(`bestMoves${i}`);
+            const timeElement = document.getElementById(`bestTime${i}`);
+
+            if (score) {
+                movesElement.textContent = score.moves;
+                timeElement.textContent = this.formatTime(score.time);
+            } else {
+                movesElement.textContent = '--';
+                timeElement.textContent = '--:--';
+            }
+        }
+    }
+
+    formatTime(timeInMilliseconds) {
+        const minutes = Math.floor(timeInMilliseconds / 60000);
+        const seconds = Math.floor((timeInMilliseconds % 60000) / 1000);
+        return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
 }
 
-// アプリケーションの初期化
-document.addEventListener('DOMContentLoaded', () => {
+// デバッグ用の関数を追加
+function logLayoutInfo() {
+    const viewport = {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        visualViewport: window.visualViewport ? {
+            width: window.visualViewport.width,
+            height: window.visualViewport.height,
+            scale: window.visualViewport.scale
+        } : 'not supported'
+    };
+
+    const towersContainer = document.querySelector('.towers-container');
+    const towers = Array.from(document.querySelectorAll('.tower'));
+    const containerRect = towersContainer.getBoundingClientRect();
+
+    const layoutInfo = {
+        viewport,
+        container: {
+            width: containerRect.width,
+            height: containerRect.height,
+            computedStyle: {
+                gap: getComputedStyle(towersContainer).gap,
+                padding: getComputedStyle(towersContainer).padding
+            }
+        },
+        towers: towers.map(tower => {
+            const rect = tower.getBoundingClientRect();
+            return {
+                width: rect.width,
+                height: rect.height,
+                computedStyle: {
+                    width: getComputedStyle(tower).width,
+                    height: getComputedStyle(tower).height
+                }
+            };
+        })
+    };
+
+    console.log('Layout Debug Info:', layoutInfo);
+}
+
+// 既存のイベントリスナーを拡張
+window.addEventListener('load', () => {
     new HanoiTower();
-}); 
+    logLayoutInfo();
+});
+
+window.addEventListener('resize', () => {
+    logLayoutInfo();
+});
+
+// タッチイベントのデバッグ
+function logTouchEvent(event) {
+    const touch = event.touches[0];
+    console.log('Touch Event:', {
+        type: event.type,
+        position: {
+            clientX: touch?.clientX,
+            clientY: touch?.clientY
+        },
+        target: event.target.className
+    });
+}
+
+document.addEventListener('touchstart', logTouchEvent);
+document.addEventListener('touchmove', logTouchEvent);
+document.addEventListener('touchend', () => console.log('Touch Event: touchend')); 

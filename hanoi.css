@@ -1,101 +1,201 @@
 :root {
-    --bg-color: #1a1614;
-    --surface-color: #2a2220;
-    --primary-color: #ff8c3b;
-    --primary-dark: #ff7422;
-    --accent-color: #f39c12;
-    --text-color: #ffffff;
-    --text-secondary: #d4d4d4;
-    --disk-color-1: #e67e22;
-    --disk-color-2: #f39c12;
-    --tower-color: #4a3c38;
-    --tower-dark: #382e2a;
-    --shadow-color: rgba(255, 140, 59, 0.2);
-    --glow-color: rgba(255, 140, 59, 0.45);
-    --overlay-color: rgba(236, 240, 241, 0.04);
+    /* Color Variables - Japanese Style */
+    --color-primary: #8C7355;
+    /* 深い茶色 */
+    --color-surface: #B49B7F;
+    /* 薄い茶色 */
+    --color-accent: #A67B5B;
+    /* アクセントの茶色 */
+    --color-accent-dark: #8B6B4C;
+    /* 濃いアクセント */
+    --color-text: #FFFFFF;
+    --color-disk-base: #6D4C41;
+    /* 濃い茶色 */
+    --color-disk-gradient: #8D6E63;
+    /* 中間の茶色 */
+    --color-disk-highlight: #A1887F;
+    /* 明るい茶色 */
+    --color-tower: #5D4037;
+    /* 濃い茶色 */
+    --color-tower-dark: #4E342E;
+    /* より濃い茶色 */
+    --color-tower-highlight: #6D4C41;
+    /* やや明るい茶色 */
+    --color-selected: #D7CCC8;
+    /* 選択時の薄い茶色 */
+    --color-selected-light: #EFEBE9;
+    /* より薄い茶色 */
+    --color-selected-rgb: 215, 204, 200;
+
+    /* Effect Colors */
+    --color-shadow: rgba(0, 0, 0, 0.25);
+    --color-glow: rgba(139, 107, 76, 0.4);
+    --color-overlay: rgba(255, 255, 255, 0.05);
+    --color-success: #8D6E63;
+    --color-success-dark: #6D4C41;
+
+    /* Layout Dimensions */
+    --container-max-width: min(1400px, 95vw);
+    --game-min-width: 320px;
+
+    /* Tower Dimensions */
+    --tower-width-desktop: clamp(180px, 22vw, 250px);
+    --tower-width-tablet: clamp(120px, 20vw, 180px);
+    --tower-width-mobile: clamp(40px, 3vw, 90px);
+    --tower-height-desktop: min(300px, 40vh);
+    --tower-height-tablet: min(250px, 35vh);
+    --tower-height-mobile: min(200px, 30vh);
+    --tower-pole-width: clamp(8px, 1.2vw, 12px);
+    --tower-base-width: clamp(60px, 12vw, 120px);
+    --tower-base-height: clamp(10px, 1.5vh, 15px);
+    --tower-gap-desktop: clamp(20px, 4vw, 40px);
+    --tower-gap-tablet: clamp(15px, 3vw, 25px);
+    --tower-gap-mobile: clamp(10px, 2vw, 15px);
+
+    /* Disk Dimensions */
+    --disk-height-desktop: 28px;
+    --disk-height-tablet: 24px;
+    --disk-height-mobile: 20px;
+    --disk-min-width: 50px;
+
+    /* Spacing */
+    --spacing-xs: clamp(5px, 0.5vw, 8px);
+    --spacing-sm: clamp(8px, 1vw, 12px);
+    --spacing-md: clamp(12px, 1.5vw, 20px);
+    --spacing-lg: clamp(16px, 2vw, 24px);
+    --spacing-xl: clamp(24px, 3vw, 30px);
+
+    /* Animation Durations */
+    --animation-duration-normal: 0.3s;
+    --animation-duration-long: 1s;
+    --animation-duration-pulse: 1.5s;
 }
 
-body {
-    margin: 0;
-    padding: 10px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-color);
-    background-image:
-        linear-gradient(120deg, var(--overlay-color), transparent),
-        radial-gradient(circle at 100% 100%, var(--shadow-color) 0%, transparent 60%),
-        radial-gradient(circle at 0% 0%, var(--shadow-color) 0%, transparent 60%);
+/* 横画面表示の強制（モバイルのみ） */
+@media screen and (orientation: portrait) and (max-width: 768px) {
+    .orientation-message {
+        display: flex;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--color-primary);
+        color: var(--color-text);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        padding: 20px;
+        text-align: center;
+        gap: 20px;
+    }
+
+    .container {
+        display: none;
+    }
+}
+
+/* PCとタブレットでは向き案内を非表示 */
+@media screen and (min-width: 769px) {
+    .orientation-message {
+        display: none;
+    }
+}
+
+/* 基本レイアウト調整 */
+.fullscreen-container {
+    width: 100%;
     min-height: 100vh;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    color: var(--text-color);
+    padding: var(--spacing-md);
+    box-sizing: border-box;
 }
 
 .container {
     width: 100%;
-    max-width: 1200px;
+    max-width: var(--container-max-width);
     margin: 0 auto;
-    padding: 10px;
-    box-sizing: border-box;
-}
-
-h1 {
-    text-align: center;
-    color: var(--primary-color);
-    font-size: clamp(1.5rem, 4vw, 2.5rem);
-    margin-bottom: 1rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    letter-spacing: 0.5px;
-}
-
-.game-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
+    gap: var(--spacing-md);
+}
+
+.game-container {
     width: 100%;
+    max-width: var(--container-max-width);
+    padding: var(--spacing-md);
+    box-sizing: border-box;
+    background: linear-gradient(135deg,
+            rgba(255, 207, 151, 0.363),
+            rgba(129, 98, 61, 0.61));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .towers-container {
+    width: 100%;
+    max-width: var(--container-max-width);
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: flex-end;
-    width: 100%;
-    gap: 40px;
-    margin: 10px 0;
-    padding: 20px;
-    background: var(--surface-color);
-    border-radius: 15px;
-    box-shadow: 0 10px 30px var(--shadow-color),
-        inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    gap: var(--tower-gap-desktop);
+    padding: var(--spacing-xl);
+    margin: var(--spacing-sm) auto;
     box-sizing: border-box;
-    min-height: 320px;
-    border: 1px solid rgba(255, 140, 59, 0.15);
-    backdrop-filter: blur(5px);
+    min-height: var(--tower-height-desktop);
+    position: relative;
+    overflow: visible;
+    background: linear-gradient(135deg,
+            rgba(180, 155, 127, 0.2),
+            rgba(140, 115, 85, 0.3));
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tower-wrapper {
+    flex: 1;
+    max-width: var(--tower-width-desktop);
+    min-width: var(--tower-width-mobile);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
 }
 
 .tower {
+    width: 100%;
+    height: var(--tower-height-desktop);
     position: relative;
-    width: 280px;
-    height: 300px;
     display: flex;
     flex-direction: column-reverse;
     align-items: center;
-    padding-top: 20px;
-    background-color: transparent;
+    padding-top: var(--spacing-lg);
+    background: linear-gradient(to bottom,
+            rgba(255, 255, 255, 0.05),
+            rgba(255, 255, 255, 0.02));
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
 }
 
 .tower::before {
     content: '';
     position: absolute;
-    bottom: 0;
-    width: 15px;
-    height: 280px;
-    background: linear-gradient(to bottom, var(--tower-color), var(--tower-dark));
-    border-radius: 8px;
-    box-shadow: 0 0 10px var(--shadow-color),
-        inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    top: var(--spacing-lg);
+    bottom: var(--tower-base-height);
+    width: var(--tower-pole-width);
+    background: linear-gradient(to right,
+            var(--color-tower-dark),
+            var(--color-tower));
+    border-radius: 6px;
+    box-shadow: 0 4px 12px var(--color-shadow);
     z-index: 1;
 }
 
@@ -103,12 +203,13 @@ h1 {
     content: '';
     position: absolute;
     bottom: 0;
-    width: 200px;
-    height: 15px;
-    background: linear-gradient(to right, var(--tower-dark), var(--tower-color));
+    width: var(--tower-base-width);
+    height: var(--tower-base-height);
+    background: linear-gradient(to right,
+            var(--color-tower-dark),
+            var(--color-tower));
     border-radius: 8px;
-    box-shadow: 0 5px 15px var(--shadow-color),
-        inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 12px var(--color-shadow);
 }
 
 .tower.target-possible::before {
@@ -117,45 +218,44 @@ h1 {
 }
 
 .disk {
+    width: calc(40% + (var(--disk-scale, 1) * 50%));
+    max-width: calc(100% - var(--spacing-md));
+    height: var(--disk-height-desktop);
+    margin: 2px 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     z-index: 2;
-    border-radius: 8px;
-    height: 20px;
-    margin: 2px;
-    background: linear-gradient(to right, #8B4513, #654321);
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    min-width: var(--disk-min-width);
+    will-change: transform;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg,
+            var(--color-disk-base),
+            var(--color-disk-gradient));
+    border-radius: 12px;
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .disk:hover {
-    background: linear-gradient(to right, #A0522D, #8B4513);
-    box-shadow: 0 2px 8px rgba(139, 69, 19, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2),
+        0 8px 16px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg,
+            var(--color-disk-gradient),
+            var(--color-disk-highlight));
 }
 
 .disk.selected {
-    background: linear-gradient(to right, #f39c12, #d35400);
-    box-shadow: 0 0 20px rgba(243, 156, 18, 0.7);
-    transform: scale(1.1);
+    background: linear-gradient(135deg,
+            var(--color-selected),
+            var(--color-selected-light));
+    box-shadow: 0 0 20px rgba(var(--color-selected-rgb), 0.4);
+    transform: translateY(-4px) scale(1.02);
     z-index: 10;
-    animation: diskPulse 1.5s infinite;
-}
-
-@keyframes diskPulse {
-    0% {
-        box-shadow: 0 0 15px rgba(243, 156, 18, 0.5);
-        transform: scale(1.1);
-    }
-
-    50% {
-        box-shadow: 0 0 25px rgba(243, 156, 18, 0.8);
-        transform: scale(1.15);
-    }
-
-    100% {
-        box-shadow: 0 0 15px rgba(243, 156, 18, 0.5);
-        transform: scale(1.1);
-    }
 }
 
 .disk.dragging {
@@ -169,7 +269,9 @@ h1 {
 }
 
 @keyframes success-pulse {
-    0% {
+
+    0%,
+    100% {
         transform: scale(1);
         box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
     }
@@ -178,87 +280,100 @@ h1 {
         transform: scale(1.05);
         box-shadow: 0 0 20px rgba(46, 204, 113, 0.8);
     }
-
-    100% {
-        transform: scale(1);
-        box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
-    }
 }
 
 .controls {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 15px;
-    margin-top: 1rem;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
     width: 100%;
-    padding: 0 10px;
-    box-sizing: border-box;
+    padding: var(--spacing-md);
+    background: linear-gradient(135deg,
+            rgba(52, 73, 94, 0.8),
+            rgba(44, 62, 80, 0.8));
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .move-counter {
+    width: 100%;
     display: flex;
-    gap: 20px;
-    font-size: clamp(1rem, 2.5vw, 1.2rem);
-    color: var(--text-color);
-    text-align: center;
-    margin: 0.5rem 0;
-    padding: 12px 20px;
-    background: var(--surface-color);
+    justify-content: center;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background: linear-gradient(135deg,
+            rgba(180, 155, 127, 0.1),
+            rgba(140, 115, 85, 0.2));
     border-radius: 12px;
-    box-shadow: 0 4px 6px var(--shadow-color),
-        inset 0 1px 1px rgba(255, 255, 255, 0.3);
-    border: 1px solid rgba(255, 140, 59, 0.15);
-    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .move-counter div {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+    padding: var(--spacing-sm);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
 }
 
 .move-counter span {
-    font-weight: bold;
-    font-size: 1.2em;
-    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 1.3em;
+    color: var(--color-text);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .move-counter label {
-    font-size: 0.8em;
-    color: var(--text-secondary);
+    font-size: 0.9em;
+    color: var(--color-text);
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 button {
-    padding: 10px 20px;
+    padding: 12px 24px;
     font-size: clamp(0.9rem, 2vw, 1rem);
     border: none;
     border-radius: 12px;
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-    color: white;
+    background: linear-gradient(135deg,
+            var(--color-accent),
+            var(--color-accent-dark));
+    color: var(--color-text);
     cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 6px var(--shadow-color),
-        inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     white-space: nowrap;
     min-width: 120px;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
+    font-weight: 500;
+    text-transform: uppercase;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 button:hover {
+    background: linear-gradient(135deg,
+            var(--color-accent-dark),
+            var(--color-accent));
     transform: translateY(-2px);
-    box-shadow: 0 6px 8px var(--shadow-color);
-    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-    filter: brightness(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 button:disabled {
-    opacity: 0.5;
+    opacity: 0.6;
     cursor: not-allowed;
     transform: none;
-    background: var(--tower-color);
-    filter: brightness(0.95);
+    background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+    filter: none;
 }
 
 .volume-control {
@@ -266,11 +381,11 @@ button:disabled {
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
-    color: var(--text-secondary);
-    background: var(--surface-color);
+    color: var(--color-text);
+    background: var(--color-surface);
     padding: 8px 16px;
     border-radius: 12px;
-    box-shadow: 0 4px 6px var(--shadow-color),
+    box-shadow: 0 4px 6px var(--color-shadow),
         inset 0 1px 1px rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 140, 59, 0.15);
@@ -280,7 +395,7 @@ input[type="range"] {
     width: 120px;
     height: 8px;
     -webkit-appearance: none;
-    background: var(--tower-color);
+    background: var(--color-tower);
     border-radius: 4px;
     outline: none;
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.15);
@@ -290,100 +405,208 @@ input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 20px;
     height: 20px;
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    background: linear-gradient(135deg, var(--color-accent), var(--color-accent-dark));
     border-radius: 50%;
     cursor: pointer;
-    box-shadow: 0 0 10px var(--shadow-color),
+    box-shadow: 0 0 10px var(--color-shadow),
         inset 0 1px 1px rgba(255, 255, 255, 0.2);
 }
 
-/* モバイル対応のメディアクエリ */
+/* Media Queries */
+@media (max-width: 1024px) {
+    .towers-container {
+        gap: var(--tower-gap-tablet);
+        padding: var(--spacing-lg);
+        min-height: 300px;
+    }
+
+    .tower-wrapper {
+        max-width: var(--tower-width-tablet);
+    }
+
+    .tower {
+        height: var(--tower-height-tablet);
+        aspect-ratio: 1/1.8;
+    }
+
+    .disk {
+        height: var(--disk-height-tablet);
+    }
+
+    .controls {
+        gap: 10px;
+    }
+
+    button {
+        min-width: 100px;
+        font-size: 0.95em;
+    }
+}
+
 @media (max-width: 768px) {
+    .towers-container {
+        gap: var(--tower-gap-mobile);
+        padding: var(--spacing-md);
+        min-height: 250px;
+    }
+
+    .tower-wrapper {
+        max-width: var(--tower-width-tablet);
+        min-width: var(--tower-width-mobile);
+    }
+
+    .tower {
+        height: var(--tower-height-mobile);
+        aspect-ratio: 1/1.6;
+    }
+
+    .disk {
+        height: var(--disk-height-mobile);
+        min-width: 30px;
+    }
+
+    .tower-label {
+        font-size: 0.8em;
+    }
+
+    .controls {
+        gap: 8px;
+    }
+
+    button {
+        padding: 8px 16px;
+        min-width: 80px;
+        font-size: 0.85em;
+    }
+}
+
+@media (max-width: 480px) {
+    .towers-container {
+        padding: var(--spacing-sm);
+        min-height: 200px;
+        gap: 10px;
+    }
+
+    .tower-wrapper {
+        max-width: var(--tower-width-mobile);
+    }
+
+    .tower {
+        aspect-ratio: 1/1.4;
+    }
+
+    .disk {
+        width: calc(40% + (var(--disk-scale, 1) * 50%));
+        min-width: 25px;
+        height: var(--disk-height-mobile);
+    }
+
+    .controls {
+        gap: 6px;
+    }
+
+    button {
+        padding: 6px 12px;
+        min-width: 70px;
+        font-size: 0.8em;
+    }
+
+    h1 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Portrait Mode Optimization */
+@media (orientation: portrait) and (max-width: 480px) {
+    .tower {
+        aspect-ratio: 1/1.2;
+        height: var(--tower-height-mobile);
+    }
+
+    .towers-container {
+        gap: var(--tower-gap-mobile);
+        min-height: 180px;
+    }
+
+    .disk {
+        height: calc(var(--disk-height-mobile) * 0.8);
+    }
+}
+
+/* Landscape Mode Optimization */
+@media (orientation: landscape) and (max-height: 600px) {
+    .game-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .towers-container {
+        min-height: var(--tower-height-mobile);
+        order: -1;
+        width: 100%;
+    }
+
+    .tower {
+        height: var(--tower-height-mobile);
+    }
+
+    .disk {
+        height: var(--disk-height-mobile);
+    }
+
+    .move-counter {
+        flex-direction: row;
+        justify-content: center;
+        padding: var(--spacing-xs);
+    }
+}
+
+/* 埋め込み用のスタイル */
+.embedded {
     .container {
+        max-width: 100%;
         padding: 5px;
     }
 
     .towers-container {
-        padding: 10px;
-        gap: 20px;
-        overflow-x: auto;
-        justify-content: flex-start;
-        min-height: 270px;
-    }
-
-    .tower {
-        min-width: 200px;
-        width: 200px;
-        height: 250px;
-        flex-shrink: 0;
-    }
-
-    .tower::before {
-        width: 12px;
-        height: 230px;
-    }
-
-    .tower::after {
-        width: 150px;
-        height: 12px;
-    }
-
-    .disk {
-        height: 16px;
-        min-width: 30px;
-    }
-
-    .move-counter {
-        flex-direction: column;
-        gap: 10px;
-        padding: 8px;
-    }
-}
-
-/* 横向き対応 */
-@media (max-height: 600px) and (orientation: landscape) {
-    .container {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-start;
-        gap: 20px;
+        min-height: 200px;
+        max-height: 250px;
     }
 
     .game-container {
-        flex: 1;
-    }
-
-    .towers-container {
-        min-height: 220px;
-    }
-
-    .tower {
-        height: 200px;
-    }
-
-    .tower::before {
-        height: 180px;
+        gap: 0.5rem;
     }
 
     .controls {
-        width: 200px;
-        flex-direction: column;
-        align-items: stretch;
+        gap: 10px;
+    }
+
+    button {
+        padding: 8px 16px;
+        font-size: 0.9em;
+    }
+
+    .move-counter {
+        padding: 8px;
+        font-size: 0.9em;
     }
 }
 
 .game-settings {
+    width: 100%;
     display: flex;
-    gap: 20px;
-    align-items: center;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.game-controls {
+    display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    margin-bottom: 1rem;
-    padding: 12px 20px;
-    background: var(--surface-color);
-    border-radius: 12px;
-    box-shadow: 0 4px 6px var(--shadow-color),
-        inset 0 1px 1px rgba(255, 255, 255, 0.3);
-    border: 1px solid rgba(255, 140, 59, 0.15);
+    gap: var(--spacing-sm);
+    width: 100%;
 }
 
 .disk-selector {
@@ -393,34 +616,34 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .disk-selector label {
-    color: var(--text-color);
+    color: var(--color-text);
     font-size: 0.9em;
 }
 
 .disk-selector select {
     padding: 5px 10px;
     border-radius: 8px;
-    border: 1px solid var(--primary-color);
-    background: var(--surface-color);
-    color: var(--text-color);
+    border: 1px solid var(--color-accent);
+    background: var(--color-surface);
+    color: var(--color-text);
     font-size: 0.9em;
     cursor: pointer;
 }
 
 .disk-selector select:focus {
     outline: none;
-    box-shadow: 0 0 0 2px var(--primary-color);
+    box-shadow: 0 0 0 2px var(--color-accent);
 }
 
 .game-instructions {
     text-align: center;
-    color: var(--text-secondary);
+    color: var(--color-text);
     font-size: 0.9em;
     margin-bottom: 1rem;
     padding: 12px 20px;
-    background: var(--surface-color);
+    background: var(--color-surface);
     border-radius: 12px;
-    box-shadow: 0 4px 6px var(--shadow-color),
+    box-shadow: 0 4px 6px var(--color-shadow),
         inset 0 1px 1px rgba(255, 255, 255, 0.3);
     border: 1px solid rgba(255, 140, 59, 0.15);
 }
@@ -434,21 +657,12 @@ input[type="range"]::-webkit-slider-thumb {
     cursor: grabbing;
 }
 
-.tower-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-}
-
 .tower-label {
-    color: var(--text-secondary);
-    font-size: 0.9em;
+    color: var(--color-text);
     text-align: center;
-    padding: 5px 10px;
-    background: var(--surface-color);
-    border-radius: 8px;
-    box-shadow: 0 2px 4px var(--shadow-color);
+    margin-top: 10px;
+    font-size: 0.9em;
+    opacity: 0.9;
 }
 
 .tower-button {
@@ -456,16 +670,16 @@ input[type="range"]::-webkit-slider-thumb {
     font-size: 0.9em;
     border: none;
     border-radius: 8px;
-    background: var(--surface-color);
-    color: var(--text-color);
+    background: var(--color-surface);
+    color: var(--color-text);
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 4px var(--shadow-color);
+    box-shadow: 0 2px 4px var(--color-shadow);
     min-width: 80px;
 }
 
 .tower-button:hover:not(:disabled) {
-    background: var(--primary-color);
+    background: var(--color-accent);
     transform: translateY(-2px);
 }
 
@@ -475,23 +689,26 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .tower-button.selected {
-    background: var(--primary-color);
+    background: var(--color-accent);
     color: white;
-    box-shadow: 0 0 10px var(--glow-color);
+    box-shadow: 0 0 10px var(--color-glow);
 }
 
 /* モバイル対応の調整 */
 @media (max-width: 768px) {
-    .tower-button {
-        padding: 6px 12px;
-        font-size: 0.8em;
-        min-width: 60px;
+    .tower-wrapper {
+        min-width: 200px;
     }
-}
 
-/* 目標の塔の光る効果を削除 */
-@keyframes glowTower {
-    display: none;
+    .tower-label {
+        font-size: 0.8em;
+        padding: 3px 8px;
+    }
+
+    .congratulations-content {
+        margin: 0 20px;
+        padding: 1.5rem;
+    }
 }
 
 .congratulations {
@@ -513,23 +730,23 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .congratulations-content {
-    background: var(--surface-color);
+    background: var(--color-surface);
     padding: 2rem;
     border-radius: 15px;
     text-align: center;
-    box-shadow: 0 0 30px var(--glow-color);
-    border: 1px solid var(--primary-color);
+    box-shadow: 0 0 30px var(--color-glow);
+    border: 1px solid var(--color-accent);
     animation: popIn 0.5s ease-out;
 }
 
 .congratulations h2 {
-    color: var(--primary-color);
-    margin-bottom: 1rem;
+    color: var(--color-text);
+    margin-bottom: 20px;
 }
 
 .congratulations p {
-    color: var(--text-color);
-    margin: 0.5rem 0;
+    color: var(--color-text);
+    margin: 10px 0;
 }
 
 @keyframes fadeIn {
@@ -565,7 +782,7 @@ input[type="range"]::-webkit-slider-thumb {
 
     50% {
         transform: scale(1.1);
-        box-shadow: 0 0 30px var(--glow-color);
+        box-shadow: 0 0 30px var(--color-glow);
     }
 
     100% {
@@ -595,7 +812,7 @@ input[type="range"]::-webkit-slider-thumb {
     padding: 1rem;
     background: rgba(255, 140, 59, 0.1);
     border-radius: 10px;
-    border: 1px solid var(--primary-color);
+    border: 1px solid var(--color-accent);
 }
 
 .score-details p {
@@ -605,7 +822,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 .final-score {
     font-size: 1.4em !important;
-    color: var(--primary-color) !important;
+    color: var(--color-accent) !important;
     font-weight: bold;
     margin-top: 1.2rem !important;
 }
@@ -613,5 +830,223 @@ input[type="range"]::-webkit-slider-thumb {
 #timer {
     font-family: monospace;
     font-size: 1.2em;
-    color: var(--primary-color);
+    color: var(--color-accent);
+}
+
+/* 各塔の個別の幅設定 */
+#tower0 {
+    width: clamp(150px, 30%, 250px);
+    /* 開始の塔 */
+}
+
+#tower1 {
+    width: clamp(150px, 30%, 250px);
+    /* 作業用の塔 */
+}
+
+#tower2 {
+    width: clamp(150px, 30%, 250px);
+    /* 目標の塔 */
+}
+
+/* PCサイズでの塔の配置調整 */
+@media (min-width: 1024px) {
+    .tower {
+        width: clamp(220px, 28%, 350px);
+    }
+
+    .towers-container {
+        gap: clamp(60px, 10vw, 150px);
+    }
+}
+
+/* スコアと時間の表示を白に */
+#timer,
+#moveCount,
+#minMoves,
+#finalMoveCount,
+#finalMinMoves,
+#finalTime,
+#finalScore {
+    color: var(--color-text);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.score-details {
+    color: var(--color-text);
+    text-align: center;
+    margin: 20px 0;
+}
+
+.final-score {
+    color: var(--color-text);
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 15px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* レスポンシブ対応の調整 */
+@media (max-width: 1023px) {
+    .towers-container {
+        gap: clamp(30px, 6vw, 80px);
+        padding: 30px;
+    }
+
+    .tower {
+        width: clamp(180px, 25%, 280px);
+    }
+}
+
+@media (max-width: 480px) {
+    .towers-container {
+        gap: clamp(10px, 3vw, 20px);
+        padding: 15px;
+    }
+
+    .tower {
+        width: clamp(80px, 20%, 150px);
+    }
+}
+
+/* Utility Classes */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* 横画面最適化 */
+@media (orientation: landscape) {
+    .game-container {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+        height: calc(100vh - var(--spacing-md) * 2);
+        overflow-y: auto;
+    }
+
+    .towers-container {
+        flex: 1;
+        min-height: 40vh;
+        margin: var(--spacing-sm) 0;
+    }
+
+    .game-settings {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .game-controls {
+        flex: 1;
+        justify-content: flex-start;
+    }
+
+    .move-counter {
+        width: auto;
+        min-width: 300px;
+    }
+}
+
+/* スマートフォン横画面 */
+@media (orientation: landscape) and (max-width: 768px) {
+    .fullscreen-container {
+        padding: var(--spacing-sm);
+    }
+
+    .game-container {
+        padding: var(--spacing-sm);
+        height: calc(100vh - var(--spacing-sm) * 2);
+    }
+
+    .towers-container {
+        min-height: 30vh;
+    }
+
+    .game-settings {
+        flex-direction: column;
+    }
+
+    .move-counter {
+        width: 100%;
+    }
+}
+
+.high-scores {
+    width: 100%;
+    padding: var(--spacing-md);
+    background: linear-gradient(135deg,
+            rgba(255, 207, 151, 0.363),
+            rgba(129, 98, 61, 0.61));
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.high-scores h3 {
+    text-align: center;
+    margin: 0 0 var(--spacing-sm);
+    font-size: 1.1em;
+    color: var(--color-text);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.score-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--spacing-sm);
+    width: 100%;
+}
+
+.score-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing-sm);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.score-item label {
+    font-size: 0.9em;
+    margin-bottom: var(--spacing-xs);
+    color: var(--color-text);
+    opacity: 0.9;
+}
+
+.score-details {
+    display: flex;
+    gap: var(--spacing-sm);
+    font-size: 0.9em;
+    color: var(--color-text);
+}
+
+.score-details span {
+    font-weight: 600;
+}
+
+/* 横画面最適化のスコア表示調整 */
+@media (orientation: landscape) {
+    .high-scores {
+        margin-top: var(--spacing-sm);
+    }
+
+    .score-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (orientation: landscape) and (max-width: 768px) {
+    .score-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }

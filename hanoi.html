@@ -3,91 +3,122 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="ハノイの塔 - 古典的なパズルゲーム">
     <title>ハノイの塔</title>
     <link rel="icon" href="data:,">
     <link rel="stylesheet" href="hanoi.css">
 </head>
 
 <body>
-    <div class="container">
-        <h1>ハノイの塔</h1>
-        <div class="game-container">
-            <div class="game-settings">
-                <div class="disk-selector">
-                    <label for="diskCount">ディスクの枚数:</label>
-                    <select id="diskCount">
-                        <option value="3">3枚</option>
-                        <option value="4">4枚</option>
-                        <option value="5">5枚</option>
-                        <option value="6">6枚</option>
-                        <option value="7">7枚</option>
-                        <option value="8">8枚</option>
-                        <option value="9">9枚</option>
-                        <option value="10">10枚</option>
-                        <option value="11">11枚</option>
-                        <option value="12">12枚</option>
-                    </select>
+    <div class="orientation-message">
+        <h2>画面を横向きにしてください</h2>
+        <p>このゲームは横画面でのプレイを推奨しています</p>
+    </div>
+
+    <div class="fullscreen-container">
+        <main class="container">
+            <div class="game-container" role="application" aria-label="ハノイの塔ゲーム">
+                <section class="game-settings" aria-labelledby="settings-heading">
+                    <div class="game-controls">
+                        <button id="startGameButton">ゲーム開始</button>
+                        <button id="resetButton" disabled>リセット</button>
+                        <button id="showSolutionButton" disabled>回答を見る</button>
+                        <div class="disk-selector">
+                            <label for="diskCount">プレート数: </label>
+                            <select id="diskCount">
+                                <option value="3">3枚</option>
+                                <option value="4">4枚</option>
+                                <option value="5">5枚</option>
+                                <option value="6">6枚</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="move-counter">
+                        <div>
+                            <label>現在の手数</label>
+                            <span id="moveCount">0</span>
+                        </div>
+                        <div>
+                            <label>最小手数</label>
+                            <span id="minMoves">7</span>
+                        </div>
+                        <div>
+                            <label>経過時間</label>
+                            <span id="timer">00:00</span>
+                        </div>
+                    </div>
+                    <div class="high-scores">
+                        <h3>ベストスコア</h3>
+                        <div class="score-grid">
+                            <div class="score-item">
+                                <label>3枚</label>
+                                <div class="score-details">
+                                    <span id="bestMoves3">--</span>手
+                                    <span id="bestTime3">--:--</span>
+                                </div>
+                            </div>
+                            <div class="score-item">
+                                <label>4枚</label>
+                                <div class="score-details">
+                                    <span id="bestMoves4">--</span>手
+                                    <span id="bestTime4">--:--</span>
+                                </div>
+                            </div>
+                            <div class="score-item">
+                                <label>5枚</label>
+                                <div class="score-details">
+                                    <span id="bestMoves5">--</span>手
+                                    <span id="bestTime5">--:--</span>
+                                </div>
+                            </div>
+                            <div class="score-item">
+                                <label>6枚</label>
+                                <div class="score-details">
+                                    <span id="bestMoves6">--</span>手
+                                    <span id="bestTime6">--:--</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="towers-container">
+                    <div class="tower-wrapper">
+                        <div id="tower0" class="tower"></div>
+                        <button class="tower-button" data-tower="0" disabled>開始の塔</button>
+                    </div>
+                    <div class="tower-wrapper">
+                        <div id="tower1" class="tower"></div>
+                        <button class="tower-button" data-tower="1" disabled>作業用の塔</button>
+                    </div>
+                    <div class="tower-wrapper">
+                        <div id="tower2" class="tower"></div>
+                        <button class="tower-button" data-tower="2" disabled>目標の塔</button>
+                    </div>
                 </div>
-                <button id="startGameButton">ゲームスタート</button>
-                <button id="resetButton" disabled>リセット</button>
-                <button id="showSolutionButton" disabled>回答を見る</button>
-            </div>
-            <div class="game-instructions">
-                <p>【目標】左の塔から右の塔へすべてのディスクを移動させてください。</p>
-                <p>【ルール】大きなディスクの上に小さなディスクを置くことはできません。</p>
-                <p>【操作方法】ディスクをドラッグ＆ドロップ、またはクリックで移動できます。</p>
-            </div>
-            <div class="move-counter">
-                <div>
-                    <label>現在の移動回数</label>
-                    <span id="moveCount">0</span>
-                </div>
-                <div>
-                    <label>最短移動回数</label>
-                    <span id="minMoves">0</span>
-                </div>
-                <div>
-                    <label>経過時間</label>
-                    <span id="timer">00:00</span>
-                </div>
-            </div>
-            <div class="towers-container">
-                <div class="tower-wrapper">
-                    <div id="tower0" class="tower"></div>
-                    <div class="tower-label">開始の塔</div>
-                    <button class="tower-button" data-tower="0" disabled>選択</button>
-                </div>
-                <div class="tower-wrapper">
-                    <div id="tower1" class="tower"></div>
-                    <div class="tower-label">作業用の塔</div>
-                    <button class="tower-button" data-tower="1" disabled>選択</button>
-                </div>
-                <div class="tower-wrapper">
-                    <div id="tower2" class="tower"></div>
-                    <div class="tower-label">目標の塔</div>
-                    <button class="tower-button" data-tower="2" disabled>選択</button>
-                </div>
-            </div>
-            <div class="controls">
+
                 <div class="volume-control">
-                    <label>音量:</label>
+                    <label for="volumeSlider">音量: </label>
                     <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.5">
                 </div>
             </div>
-        </div>
+        </main>
     </div>
+
     <div id="congratulations" class="congratulations">
         <div class="congratulations-content">
-            <h2>クリア！おめでとうございます！</h2>
+            <h2>おめでとうございます！</h2>
             <div class="score-details">
-                <p>移動回数: <span id="finalMoveCount">0</span> / 最短手数: <span id="finalMinMoves">0</span></p>
-                <p>クリア時間: <span id="finalTime">00:00</span></p>
-                <p class="final-score">スコア: <span id="finalScore">0</span>点</p>
+                <p>手数: <span id="finalMoveCount">0</span></p>
+                <p>最小手数: <span id="finalMinMoves">0</span></p>
+                <p>経過時間: <span id="finalTime">00:00</span></p>
+                <p class="final-score">スコア: <span id="finalScore">0</span></p>
             </div>
             <button id="closeCongratsButton">閉じる</button>
         </div>
     </div>
+
     <script src="hanoi.js"></script>
 </body>
 
