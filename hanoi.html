@@ -17,23 +17,32 @@
     </div>
 
     <div class="fullscreen-container">
-        <main class="container">
-            <div class="game-container" role="application" aria-label="ハノイの塔ゲーム">
-                <section class="game-settings" aria-labelledby="settings-heading">
-                    <div class="game-controls">
-                        <button id="startGameButton">ゲーム開始</button>
-                        <button id="resetButton" disabled>リセット</button>
-                        <button id="showSolutionButton" disabled>回答を見る</button>
-                        <div class="disk-selector">
-                            <label for="diskCount">プレート数: </label>
-                            <select id="diskCount">
-                                <option value="3">3枚</option>
-                                <option value="4">4枚</option>
-                                <option value="5">5枚</option>
-                                <option value="6">6枚</option>
-                            </select>
-                        </div>
-                    </div>
+        <!-- スタート画面 -->
+        <div class="screen start-screen active" id="startScreen">
+            <div class="start-menu">
+                <div class="disk-selector">
+                    <label for="diskCount">円盤の数:</label>
+                    <select id="diskCount">
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                    </select>
+                </div>
+                <div class="button-group">
+                    <button id="playButton">ゲーム開始</button>
+                    <button id="showSolutionButton">回答を見る</button>
+                    <button id="showScoresButton">スコア</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ゲーム画面 -->
+        <div class="screen game-screen" id="gameScreen">
+            <div class="game-header">
+                <button class="back-button" id="backToStartButton">←</button>
+                <div class="game-info">
                     <div class="move-counter">
                         <div>
                             <label>現在の手数</label>
@@ -48,41 +57,10 @@
                             <span id="timer">00:00</span>
                         </div>
                     </div>
-                    <div class="high-scores">
-                        <h3>ベストスコア</h3>
-                        <div class="score-grid">
-                            <div class="score-item">
-                                <label>3枚</label>
-                                <div class="score-details">
-                                    <span id="bestMoves3">--</span>手
-                                    <span id="bestTime3">--:--</span>
-                                </div>
-                            </div>
-                            <div class="score-item">
-                                <label>4枚</label>
-                                <div class="score-details">
-                                    <span id="bestMoves4">--</span>手
-                                    <span id="bestTime4">--:--</span>
-                                </div>
-                            </div>
-                            <div class="score-item">
-                                <label>5枚</label>
-                                <div class="score-details">
-                                    <span id="bestMoves5">--</span>手
-                                    <span id="bestTime5">--:--</span>
-                                </div>
-                            </div>
-                            <div class="score-item">
-                                <label>6枚</label>
-                                <div class="score-details">
-                                    <span id="bestMoves6">--</span>手
-                                    <span id="bestTime6">--:--</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                </div>
+            </div>
 
+            <div class="game-container" role="application" aria-label="ハノイの塔ゲーム">
                 <div class="towers-container">
                     <div class="tower-wrapper">
                         <div id="tower0" class="tower"></div>
@@ -97,13 +75,53 @@
                         <button class="tower-button" data-tower="2" disabled>目標の塔</button>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="volume-control">
-                    <label for="volumeSlider">音量: </label>
-                    <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.5">
+        <!-- スコア画面 -->
+        <div class="screen score-screen" id="scoreScreen">
+            <div class="score-header">
+                <button class="back-button" id="backFromScoresButton">←</button>
+                <h2>ベストスコア</h2>
+            </div>
+            <div class="score-list">
+                <div class="score-entry">
+                    <div class="rank">3枚</div>
+                    <div class="details">
+                        <span id="bestMoves3">--</span>手
+                        <span id="bestTime3">--:--</span>
+                    </div>
+                </div>
+                <div class="score-entry">
+                    <div class="rank">4枚</div>
+                    <div class="details">
+                        <span id="bestMoves4">--</span>手
+                        <span id="bestTime4">--:--</span>
+                    </div>
+                </div>
+                <div class="score-entry">
+                    <div class="rank">5枚</div>
+                    <div class="details">
+                        <span id="bestMoves5">--</span>手
+                        <span id="bestTime5">--:--</span>
+                    </div>
+                </div>
+                <div class="score-entry">
+                    <div class="rank">6枚</div>
+                    <div class="details">
+                        <span id="bestMoves6">--</span>手
+                        <span id="bestTime6">--:--</span>
+                    </div>
+                </div>
+                <div class="score-entry">
+                    <div class="rank">7枚</div>
+                    <div class="details">
+                        <span id="bestMoves7">--</span>手
+                        <span id="bestTime7">--:--</span>
+                    </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <div id="congratulations" class="congratulations">
